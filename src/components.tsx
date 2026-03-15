@@ -137,7 +137,7 @@ export const Routes = (props: RoutesProps) => {
 
   return (
     <Show when={routeStates() && root}>
-      {route => <RouteContextObj.Provider value={route}>{route.outlet()}</RouteContextObj.Provider>}
+      {route => <RouteContextObj.Provider value={route()}>{route().outlet()}</RouteContextObj.Provider>}
     </Show>
   );
 };
@@ -175,7 +175,7 @@ export const Outlet = () => {
   const route = useRoute();
   return (
     <Show when={route.child}>
-      {child => <RouteContextObj.Provider value={child}>{child.outlet()}</RouteContextObj.Provider>}
+      {child => <RouteContextObj.Provider value={child()}>{child().outlet()}</RouteContextObj.Provider>}
     </Show>
   );
 };
