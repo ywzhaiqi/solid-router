@@ -1,7 +1,7 @@
 /*@refresh skip*/
 
 import type { Component, JSX } from "solid-js";
-import { children, createMemo, createRoot, mergeProps, on, Show, splitProps } from "solid-js";
+import { children, createMemo, createRoot, mergeProps, on, Show, splitProps, untrack } from "solid-js";
 import { isServer } from "solid-js/web";
 import { pathIntegration, staticIntegration } from "./integration";
 import {
@@ -79,7 +79,7 @@ export const Routes = (props: RoutesProps) => {
     | RouteDefinition[];
 
   const branches = createMemo(() =>
-    createBranches(routeDefs(), joinPaths(parentRoute.pattern, props.base || ""), Outlet)
+    createBranches(routeDefs(), joinPaths(untrack(() => parentRoute.pattern), props.base || ""), Outlet)
   );
   const matches = createMemo(() => getRouteMatches(branches(), router.location.pathname));
 
