@@ -74,13 +74,24 @@ export interface RoutesProps {
 export const Routes = (props: RoutesProps) => {
   const router = useRouter();
   const parentRoute = useRoute();
+  // console.log("Routes render, parentRoute:", parentRoute.pattern, "location:", router.location.pathname, "base:", props.base)
   const routeDefs = children(() => props.children) as unknown as () =>
     | RouteDefinition
     | RouteDefinition[];
 
-  const branches = createMemo(() =>
-    createBranches(routeDefs(), joinPaths(untrack(() => parentRoute.pattern), props.base || ""), Outlet)
-  );
+  const branches = createMemo(() => {
+    const parentPattern = untrack(() => parentRoute.pattern)
+    const base = props.base || ""
+    // 如果 parentPattern 已经包含了 base 路径，避免重复
+    let basePath
+    if (base && (parentPattern === base || parentPattern.startsWith(base + "/") || parentPattern.startsWith(base + "*"))) {
+      basePath = parentPattern
+    } else {
+      basePath = joinPaths(parentPattern, base)
+    }
+    // console.log("branches basePath:", basePath, "parentPattern:", parentPattern, "base:", base)
+    return createBranches(routeDefs(), basePath, Outlet)
+  });
   const matches = createMemo(() => getRouteMatches(branches(), router.location.pathname));
 
   if (router.out) {
